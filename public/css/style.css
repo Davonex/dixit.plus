@@ -1,0 +1,399 @@
+/*
+Palette:
+
+Black: #323032
+Light-Black: #686c6d
+Bleu: #11779F
+Rouge: #B32728
+White: #F8FDFF
+Grey: #D6D2C9
+orange : #E8482E
+
+
+J-rouge: #e41908
+J-jaune: #efe72a
+J-vert: #0f702b
+J-Bleu: #4a72ca
+j-rose: #d4638f
+J-Blanc: 
+
+*/
+
+/* Style pour tous  */
+
+
+
+body {
+  color: #323032;
+  font-family: 'Changa', sans-serif;
+  font-weight: bold;
+  background-color: black;
+  transform: scale(1);
+  transform-origin: center top;
+}
+
+.xBody {
+  position: relative;
+  width: 1300px;
+  height: 900px;
+  margin: 8px auto 15px auto;
+  background: #323032;
+}
+
+
+
+* {
+  transition: 0.1s ease-in-out;
+  z-index: 1;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Changa', sans-serif;
+  border-radius: 3px;
+  border-style: solid;
+  
+}
+
+
+
+/* style pour l'ecran joindre */
+
+#join-game {
+  position: relative;
+  width: 400px;
+  background: #F8FDFF;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+}
+
+#join-game h1{
+  color: #323032;
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+#join-game .join-input {
+  position: relative;
+  display: block;
+  width: 80%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#join-game .join-input input{
+  float: right;
+  line-height: 18px;
+}
+
+#join-game button {
+  position: relative;
+  margin: 1%;
+  border-radius: 3px;
+  border: 2px solid #686c6d;
+  box-sizing: border-box;
+  padding: 4px;
+  width: 48%;
+  font-size: 16px;
+  background: #686c6d;
+  color: #F8FDFF;
+}
+
+#join-game #join-enter {
+  float: left;
+}
+
+#join-game #join-enter:hover {
+  background: #B32728;
+}
+
+#join-game #join-create:hover {
+  background: #11779F
+}
+
+#join-game #error-message {
+  height: 15px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+
+
+/* style pour l'ecran game */
+#game {
+  /* position: absolute; */
+  /* width: 1300px; */
+  /* left: 50%; */
+  /* transform: translateX(-50%) */
+  /* border: solid 1px red; */
+   /* background: #323032; */
+}
+
+#Playerlist {
+	position: absolute;
+	width: 200px;
+	top: 20px;
+	left: 20px;
+	background: #F8FDFF;
+	border: 2px solid #F8FDFF;
+	border-radius: 10px;
+	  /* float: left */
+}
+#Playerscore{
+	position: absolute;
+	width: 180px;
+	top: 20px;
+	right: 20px;
+	background: #F8FDFF;
+	border: 2px solid #F8FDFF;
+	border-radius: 10px;
+	  /* float: left */
+}
+
+#BoiteMessage {
+	position: absolute;
+	background-color: #686c6d;
+	width: 800px;
+	right: 250px;
+	top: 20px;
+	height: 100px;
+	overflow-y:scroll;
+}
+
+#BoiteMessage p{
+	margin: 0px;
+	padding: 0px;
+	color: #F8FDFF;
+}
+#BoiteMessage p .emet{
+	font-weight: bold;
+	color: #323032;
+}
+
+
+.panel{
+  position: relative;
+  width: 100%;
+  /* height: 6em; */
+  box-sizing: border-box;
+  text-align: left;
+}
+
+ h2, h3 {
+  color: #F8FDFF;
+  background-color: #E8482E;
+  text-align: center;
+  margin: 0;
+  border-radius: 10px;
+}
+#Playerlist .player, #Playerscore .player{
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 5px 0px;
+  border: solid 1px #F8FDFF;
+}
+
+
+#Playerlist .player .role  {
+	position: relative;
+	width: 32px;
+	display: inline-block;
+}
+#Playerlist .player .pseudo, #Playerscore .player .pseudo{
+	display: inline-block;
+	position: relative;
+	width: 60%;
+	text-align: left;
+	font-size: unset;
+    font-weight: bold;
+	margin-right: 5px;
+}
+#Playerlist .player .pseudo:hover {
+	background-color: #E8482E;
+}
+#Playerlist .player .conteur{
+	/* &#128483; */
+	background-image: url("../images/conteur.png");
+	 background-repeat: no-repeat;
+	background-size: 100% 100%;
+  background-clip: border-box;
+}
+#Playerlist .player .action{
+	/* &#128483; */
+	position: relative;
+	display: inline-block;
+	background-image: url("../images/action.gif");
+	 background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-clip: border-box;
+	width: 32px;
+}
+
+#Playerlist .player .done{
+	/* &#128483; */
+	position: relative;
+	display: inline-block;
+	background-image: url("../images/done.png");
+	 background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-clip: border-box;
+	width: 32px;
+}
+
+
+#Playerscore .player .score{
+	display: inline-block;
+	position: relative;
+	width: 25%;
+	text-align: right;
+}
+
+#StartGame {
+	position: absolute;
+	left: 500px;
+	top: 200px;
+	background: #F8FDFF;
+	border: 2px solid #F8FDFF;
+	border-radius: 10px;
+	padding: 4px;
+}
+
+#SelectionCarte {
+	position: absolute;
+	Right: 20px;
+	top: 300px;
+	background: #F8FDFF;
+	background: #F8FDFF;
+	border: 2px solid #F8FDFF;
+	border-radius: 10px;
+	padding: 4px;
+}
+
+#StartGame button, #SelectionCarte button{	
+	color: #F8FDFF;
+	background-color: #E8482E;
+	text-align: center;
+	border-radius: 10px;
+	border: none;
+	text-decoration: none;
+	padding: 5px;
+	margin: 5px;
+	margin-bottom: 15px;
+	font-size: 34px;
+	box-shadow: 5px 5px 10px 5px #686c6d;
+}
+#StartGame button:hover {
+	background-color: #912C1C
+}
+
+#StartGame button:active {
+ background-color: #912C1C;
+  box-shadow: 1px 1px 10px 1px #686c6d;
+  transform: translateY(2px);
+  transform: translateX(2px);
+}
+
+#Main {
+	position: absolute;
+	bottom: 8px;
+	/* height: 350px; */
+	/* border: 2px solid #F8FDFF; */
+	/* border-radius: 10px;	 */
+}
+
+#Main .content{
+	position: relative;
+	margin: 10px 0px;
+}
+
+.carteM {
+  position: absolute;
+  margin: 1em 0;
+  height: 300px;
+  width: 200px;
+  vertical-align: bottom;
+  /* margin: 6px 8px; */
+  border-radius: 10px;
+  box-shadow:   5px 5px 10px #686c6d;
+  cursor: pointer;
+}
+
+.p0 {
+	bottom: 10px;
+	left: 8px;
+}
+.p1 {
+	bottom: 10px;
+	left: 224px;
+}
+.p2 {
+	bottom: 10px;
+	left: 440px;
+}
+.p3 {
+	bottom: 10px;
+	left: 656px;
+}
+.p4 {
+	bottom: 10px;
+	left: 872px;
+}
+.p5 {
+	bottom: 10px;
+	left: 1088px;
+}
+
+
+
+.carteM:hover {
+	box-shadow: inset 5px 5px 10px F8FDFF;
+}
+
+
+
+/* .selection { */
+	/* position: fixed; */
+	/* top: 300px; */
+	/* left: 500px; */
+	  /* height: 450px; */
+	  /* width: 300px; */
+	 /* margin: 0px; */
+	 /* padding: 0px; */
+	 /* box-shadow:   5px 5px 10px #686c6d; */
+/* } */
+
+
+.tour-msg {
+	position: absolute;
+	top: 250px;
+	left: 350px;
+	width: 600px;
+	height: 200px;
+}
+
+.tour-msg h2{
+	text-align: center;
+	color: #686c6d;
+	background-color: #323032;
+	font-size: xx-large;
+	text-shadow: 2px 2px 1px black;
+}
+.tour-msg p{
+	text-align: center;
+	color: #686c6d;
+	margin: 10px 20px;
+	background-color: #323032;
+	font-size: x-large;
+	text-shadow: 2px 2px 1px black;
+}
+.tour-msg #conteurName{
+
+	color: #E8482E;
+
+	text-shadow: 2px 2px 1px black;
+}
+

@@ -1,0 +1,106 @@
+<html>
+<head>
+  <title>Dixit</title>
+  
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Changa:300" rel="stylesheet"> 
+  </head>
+  
+  
+  <body>
+  
+  <div class="xBody">
+  
+  <!-- Creez une salle ou se joindre à la salle -->
+  <div id="join-game">
+    <h1>Dixit</h1>
+    <!-- <form> -->
+      <div class='join-input'>
+        <label for='join-nickname'>Pseudo: </label>
+        <input id='join-nickname' type='text' maxlength="10">
+      </div>
+      <div class='join-input'>
+        <label for='join-room'>Salle: </label>
+        <input id='join-room' type='text' maxlength="10">
+      </div>
+      <div class='join-input'>
+        <label for='join-password'>Mot de passe: </label>
+        <input id='join-password' type='password' maxlength="20">
+      </div>
+    <!-- </form> -->
+    <p id='error-message'> </p>
+    <button id='join-enter'>Entrez dans la salle</button>
+    <button id='join-create'>Creez une salle</button>
+  </div>
+  
+  
+  <div id="game" style="display:none">
+  <!-- liste des joueurs   -->
+	<div id="Playerlist">
+		<h3>Rôles</h3>
+		<div class='panel'>
+			
+		</div>
+	</div>
+	
+		<div id="Playerscore">
+		<h3>Scores</h3>
+		<div class='panel'>
+			
+		</div>
+		</div>
+	
+	
+	<div id='BoiteMessage'>
+		
+	</div>	
+	
+	<!-- bouton pour demarrer la partie  -->
+	<div id="StartGame" style="display: none">
+		<div class="panel">
+			<!-- <h2>Démarrage de la partie</h2> -->
+			<button id="start">Démarrer le tour</button>
+		</div>
+	</div> 
+	<!-- find de StartGame -->
+	
+	<div id="msg_choix_carte_conteur" class="tour-msg" style="display: none">
+		<h2>Vous êtes le conteur</h2>
+		<p>Selectionnez un carte en cliquant dessus</p>
+		<p>Puis lancez <u>un mot</u> ou <u>une phrase</u> à voix haute en rapport avec l’illustration de la carte sélectionnée</p>
+	</div>
+	
+	<div id="msg_choix_carte_joueur" class="tour-msg" style="display: none">
+		<h2>Le conteur c'est <span id="conteurName"><span></h2>
+		<p>Ecoutez <u>le mot</u> ou <u>la phrase</u> lancé par le conteur<p>
+		<p>choisissez une carte ayant une illustration en rapport avec le <u>le mot</u> ou <u>la phrase</u>.<p>
+	</div>
+	
+	
+		<!-- bouton pour demarrer la partie  -->
+	<div id="SelectionCarte" style="display: none">
+		<div class="panel">
+			<!-- <h2>Démarrage de la partie</h2> -->
+			<button id="CarteSelectionee">Valider<br>votre Selection</button>
+		</div>
+	</div> 
+  
+	  <!-- Carte de la main du joueur² -->
+	  <div id="Main">
+			<div class="content">
+			</div>  
+	  </div>
+	  
+
+  
+  </div>
+	
+		
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script language="javascript" type="text/javascript" src="js/dixit.js"></script>
+  </div>
+  </body>
+</html>
