@@ -9,15 +9,16 @@ class Game{
 		this.tour;
 		this.conteur;
 		this.CartesUtilisees = [];
-		this.CartesSelectionnes = [];
-		this.NbrCarte = 269;
+		this.CartesSelectionnes = ['200','300','25'];
+		this.NbrCarte = 526;
 		this.PartieStart = false;
 		this.PhaseDeJeux = 0; 
 		this.ConteurId = "";
 		// 0 non demarrer
 		// 1 choix de la carte 
 		// 2 vote
-		// 3  Comptage de point 
+		// 3 Comptage de point  et completer les main
+		this.InitTour ();
 	}
 	
 	CreationMain (UnPlayer) {
@@ -35,6 +36,19 @@ class Game{
 		// console.log(UnPlayer);
 	}
 	
+	CompleterMain (UnPlayer) {
+		let ramdom
+		for (let i = UnPlayer.main.length ; i < 6; i++ ){
+			ramdom =  Math.floor((Math.random() * this.NbrCarte)+1);
+			while (this.CartesUtilisees.includes(ramdom)) {
+				ramdom =  Math.floor((Math.random() * this.NbrCarte)+1)
+			}
+			this.CartesUtilisees.push(ramdom);
+			UnPlayer.main.push(ramdom);
+		}
+	}
+	
+	
 	PhaseSuivante () {
 		if (typeof this.PhaseDeJeux == 'undefined') {	
 				this.PhaseDeJeux = 0; 
@@ -47,6 +61,12 @@ class Game{
 	
 	AddSelection (CarteId) {
 		this.CartesSelectionnes.push(CarteId);
+	}
+	
+	InitTour () {
+		this.conteur = "";
+		this.CartesSelectionnes = [];
+		this.PartieStart = false;
 	}
 	
 }
