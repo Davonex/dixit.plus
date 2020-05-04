@@ -28,4 +28,4 @@ let server = app.listen(process.env.PORT || 8080,"127.0.0.1", listen);
 node app.js
 ```
 * Ouvrez votre navigateur favori (Firefox !)  et miracle
-![Copie d'ecran](https://github.com/Davonex/dixit.plus/readme/screen shot.png)
+![Copie d'ecran](https://raw.githubusercontent.com/Davonex/dixit.plus/master/readme/Screen%20Shot.png)
