@@ -13,7 +13,7 @@ Adaptation du jeux de plateau DIXIT® pour jouer en ligne avec vos amis
 ## Installation 
 
 * Installez [node.js](https://nodejs.org/, "lien Node.js") - j'ai developpé avec la version 12.16
-* copiez les sources dans un répertoire 
+* copiez les sources dans un répertoire - `/opt/dixit.plus/` (par exemple)
 * installez les package express grace à la command npm
 ```bash
 npm init
@@ -28,4 +28,10 @@ let server = app.listen(process.env.PORT || 8080,"127.0.0.1", listen);
 node app.js
 ```
 * Ouvrez votre navigateur favori (Firefox !)  et miracle
-![Copie d'ecran](https://raw.githubusercontent.com/Davonex/dixit.plus/master/readme/Screen%20Shot.png)
+
+![](https://raw.githubusercontent.com/Davonex/dixit.plus/master/readme/Screen%20Shot.png )
+
+## Le Jeux
+
+Vous pouvez consulter les regles sur  (https://www.regledujeu.fr/dixit/, "regledujeux.fr")
+
