@@ -13,13 +13,13 @@ Adaptation du jeux de plateau DIXIT® pour jouer en ligne avec vos amis
 ## Installation 
 
 * Installez [node.js](https://nodejs.org/, "lien Node.js") - j'ai developpé avec la version 12.16
-* copier les sources dans un répertoire 
-* installer les package express grace à la command npm
+* copiez les sources dans un répertoire 
+* installez les package express grace à la command npm
 ```bash
 npm init
 npm install
 ```
-* modifier le listner dans le program `app.js`
+* modifiez le listner dans le program `app.js`
 ```javascript
 let server = app.listen(process.env.PORT || 8080,"127.0.0.1", listen);
 ```
