@@ -11,8 +11,8 @@ let app = express();
 let  ent = require('ent'); 
 
 //Set up server
-let server = app.listen(process.env.PORT || 2199,"192.168.0.14", listen);
-//let server = app.listen(process.env.PORT || 2099,"192.168.0.9", listen);
+// let server = app.listen(process.env.PORT || 2199,"192.168.0.14", listen);
+let server = app.listen(process.env.PORT || 2099,"192.168.0.9", listen);
 
 
 // Callback pour confirmer que le server est start
@@ -34,8 +34,9 @@ let io = require('socket.io')(server)
 
 // DIXIT Game
 const Game = require('./server/game.js')
-const MaxJoueurs = 6; // Max par room
-const MinJoueurs = 1; // Min par room
+const MaxJoueurs = 8; // Max par room
+const MinJoueurs = 3; // Min par room
+const Victoire = 30;
 
 // object qui conserve les trace des sockets, Salle et joueurs.
 let SOCKET_LIST = {}
@@ -65,12 +66,12 @@ class Player {
 	this.role = "joueur"; // role = ['joueur'|'conteur']
 	this.main = []; // Liste de carte dans la main;
 	
-	this.selection = ""; // l'Id de la carte selectionner
+	this.JoueurSelect = []; // l'Id de la carte selectionner
 	
 	this.vote = "";// L'id de la carte qui recois le vote
 	
 	this.statut = "on";  // ["on":"off"]
-	
+	this.place = 0;
 	this.QuiVotePourMoi = [];
 	this.NbrPoints = 0;
 	this.IconAction = "no-action" //IconAction = ['no-action'|'action'|'done'|'off']]
@@ -107,9 +108,22 @@ class Player {
 	this.NbrPoints = 0;
 	ROOM_LIST[room].game.CompleterMain(this);
 	this.role = "joueur";
-	this.selection = "";
+	this.JoueurSelect = [];
 	this.vote = "";
 	this.QuiVotePourMoi = [];
+  }
+  
+  InitGame (room) {
+	 if (JoueurOn(this.id))  
+		this.IconAction = "no-action"
+	this.NbrPoints = 0;
+	this.main = [];
+	ROOM_LIST[room].game.CreationMain(this);
+	this.score = 0;
+	this.role = "joueur";
+	this.JoueurSelect = [];
+	this.vote = "";
+	this.QuiVotePourMoi = []; 
   }
 
 
@@ -155,6 +169,12 @@ io.sockets.on('connection', function(socket){
 	  // Client Disconnect
 	socket.on('disconnect', () => {socketDisconnect(socket)})
 	
+	// Clique sur newgame
+	socket.on('newGame', () => {newGame(socket)})
+	
+	// Client Disconnect
+	socket.on('exitGame', () => {exitGame(socket)})
+	
 	
 });
 
@@ -166,25 +186,56 @@ function socketDisconnect(socket){
 	if (!PLAYER_LIST[socket.id]) return // Prevent Crash
 	let room = PLAYER_LIST[socket.id].room  // Get the room the client was in
 	PLAYER_LIST[socket.id].statut = "off";
+	ROOM_LIST[room].gameNbrJoueurs -=1;
 	PLAYER_LIST[socket.id].IconAction = "off";
-	// delete SOCKET_LIST[socket.id]       // Delete the client from the socket list
-	// delete PLAYER_LIST[socket.id]       // Delete the player from the player list
-	// console.log('Got disconnect!');
-	// if(player){   // If the player was in a room
-		// delete ROOM_LIST[player.room].players[socket.id] // Remove the player from their room
-		// let message = player.nickname+" vient de quitter votre salle"
-		// gameUpdate(player.room , message)                // Update everyone in the room
-		// Server Log
-		// logStats(socket.id + "(" + player.nickname + ") LEFT '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
-		// If the number of players in the room is 0 at this point, delete the room entirely
-		// if (Object.keys(ROOM_LIST[player.room].players).length === 0) {
-			// delete ROOM_LIST[player.room]
-			// logStats("DELETE ROOM: '" + player.room + "'")
-		// }
-	// }
-	// Server Log
-	gameUpdate (room,PLAYER_LIST[socket.id].nickname + " a quitté le jeux");
 	logStats('DISCONNECT: ' + PLAYER_LIST[socket.id].nickname)
+	gameUpdate (room,PLAYER_LIST[socket.id].nickname + " a quitté le jeux");
+	// Si tous les joueurs sont off line on detruit tout
+	if (CheckAllOffline (room)) {
+		// Tous le monde est deconnecté
+		for (let Id in ROOM_LIST[room].players) {
+			logStats('DELETE: ' + PLAYER_LIST[Id].nickname)
+			delete SOCKET_LIST[Id]
+			delete PLAYER_LIST[Id]
+			delete ROOM_LIST[room].players[Id]
+		}
+		//on efface la room
+		logStats("DELETE ROOM: '" + ROOM_LIST[room].room + "'")
+		delete ROOM_LIST[room]
+	}	
+}
+
+function exitGame(socket){
+  if (!PLAYER_LIST[socket.id]) return // Prevent Crash
+  let player = PLAYER_LIST[socket.id]              // Get the player that made the request
+  delete PLAYER_LIST[player.id]                    // Delete the player from the player list
+  delete ROOM_LIST[player.room].players[player.id] // Remove the player from their room
+  // Update everyone in the room
+  gameUpdate(player.room) 
+
+  // Server Log
+  logStats(socket.id + "(" + player.nickname + ") LEFT '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
+  
+  // If the number of players in the room is 0 at this point, delete the room entirely
+  if (Object.keys(ROOM_LIST[player.room].players).length === 0) {
+    delete ROOM_LIST[player.room]
+    logStats("DELETE ROOM: '" + player.room + "'")
+  }
+  socket.emit('leaveResponse', {success:true})     // Tell the client the action was successful
+}	
+
+
+
+
+function CheckAllOffline (room)
+{
+	let AllOff = true;
+	for (let i in ROOM_LIST[room].players) {
+		if (ROOM_LIST[room].players[i].statut === "on")
+			AllOff = false;
+	
+	}
+	return AllOff;
 }
 
 
@@ -220,6 +271,7 @@ function createRoom(socket, data){
         gameUpdate(room,"Salle crée")                                  // Update the game for everyone in this room
         logStats(socket.id + "(" + player.nickname + ") A créé la salle  '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
 		// console.log (ROOM_LIST[room]);
+		ROOM_LIST[room].game.NombredeJoueurs +=1;
       }
     }
   }
@@ -257,6 +309,7 @@ function joinRoom(socket, data){
 		gameUpdate(room,message)                                  // Update the game for everyone in this room
 		// Server Log
 		logStats(socket.id + "(" + player.nickname + ") JOINED '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
+		ROOM_LIST[room].game.NombredeJoueurs +=1;
 	}
 }
 
@@ -268,6 +321,7 @@ function JoinRoomAgain (room, Oldid,socket)
 		//socket.emit('joinResponse', {success:false, msg:'Le Speudo '+ pseudo+' est deja utilisé'})
 		SwitchId (Oldid,socket.id,room)
 		PLAYER_LIST[socket.id].statut = "on";
+		ROOM_LIST[room].gameNbrJoueurs +=1;
 		if (PLAYER_LIST[socket.id].role === "conteur")
 			ROOM_LIST[room].game.ConteurId = socket.id;
 		SetIconAction (room,socket.id)
@@ -288,11 +342,12 @@ function ClickStartGame (socket) {
 	let NbrJoueurs = 0;
 	let conteur = 0;
 	for (let Id in ROOM_LIST[room].players){
-		NbrJoueurs +=1;
-		if (ROOM_LIST[room].players[Id].role === "conteur") {
+		if (ROOM_LIST[room].players[Id].statut === 'on') 
+			NbrJoueurs +=1;
+		if (ROOM_LIST[room].players[Id].role === "conteur")
 			conteur += 1;
-		}
 	}
+	ROOM_LIST[room].game.NombredeJoueurs = NbrJoueurs;
 	if ( NbrJoueurs < MinJoueurs ) {
 		data = {
 			emeteur:"Serveur",
@@ -347,20 +402,25 @@ function ClickChangeRole(socket,data)
 
 // un joueur a selectionner une carte
 function ClickcarteSelectionne(socket,data) {
-	console.log ("Selection de la carte : " +data.IdCarte);
+	// console.log ("Selection de la carte : " +data.IdCarte);
 	if (!PLAYER_LIST[socket.id]) return // Prevent Crash
 	let room = PLAYER_LIST[socket.id].room  // Get the room the client was in
 	
 	// verifier que le conteur a selectioné
-	let SelCounteur = (PLAYER_LIST[ROOM_LIST[room].game.ConteurId].selection !== "");
-	if ( SelCounteur  || ROOM_LIST[room].game.ConteurId === socket.id){
+	let SelCounteur = ( PLAYER_LIST[ROOM_LIST[room].game.ConteurId].JoueurSelect.length === 1 );
+
+	if ( SelCounteur  || PLAYER_LIST[socket.id].role === "conteur"){
 		// Selectionne la carte
-		PLAYER_LIST[socket.id].selection = data.IdCarte;
+		PLAYER_LIST[socket.id].JoueurSelect.push(data.IdCarte);
 		// efface la carte de la liste
 		EffacerIndex (PLAYER_LIST[socket.id].main,data.IdCarte )
 		
 		//  l'IconAction = done
-		PLAYER_LIST[socket.id].IconAction = "done";
+		if (ROOM_LIST[room].game.NombredeJoueurs > ROOM_LIST[room].game.JeuxADeuxCartes || PLAYER_LIST[socket.id].role === "conteur") {
+			PLAYER_LIST[socket.id].IconAction = "done";
+		} else if (PLAYER_LIST[socket.id].JoueurSelect.length === 2) {
+			PLAYER_LIST[socket.id].IconAction = "done";
+		}
 		// Ajouter à la selection
 		ROOM_LIST[room].game.AddSelection(data.IdCarte);
 		// GameUpdate
@@ -369,14 +429,8 @@ function ClickcarteSelectionne(socket,data) {
 		// Le conteur n'a pas encore selectionne
 		SOCKET_LIST[socket.id].emit('gameMessage',{emeteur:"serveur",msg:"Attendez que le conteur choissise sa carte !"});
 	}
-	// Verifier que toutes les carte ont été selectionner
-	let FinPhaseUn = true;
-		for (let Id in ROOM_LIST[room].players){
-			if ( ROOM_LIST[room].players[Id].selection === "" && JoueurOn (Id)) {
-				FinPhaseUn = false
-			}
-		}
-	if (FinPhaseUn) {	
+	
+	if (CheckFinPhaseI (room)) {	
 		ROOM_LIST[room].game.PhaseSuivante();
 		// mettre les joueurs en IconAction = Action
 		for (let Id in ROOM_LIST[room].players){
@@ -386,6 +440,24 @@ function ClickcarteSelectionne(socket,data) {
 		gameUpdate (room,"Passons maintenant au vote");
 	}
 }
+
+function CheckFinPhaseI (room) {
+	let FinPhaseI = true;
+	// Verifier que toutes les carte ont été selectionner
+	for (let Id in ROOM_LIST[room].players){
+		if (ROOM_LIST[room].players[Id].role !== "conteur") {
+			if ( ROOM_LIST[room].players[Id].JoueurSelect.length !== 1 &&  ROOM_LIST[room].game.NombredeJoueurs > ROOM_LIST[room].game.JeuxADeuxCartes && JoueurOn (Id)) {
+				// Un joueur n'a pas encore selectionne une carte
+				FinPhaseI = false
+			} else if ( ROOM_LIST[room].players[Id].JoueurSelect.length !== 2 &&  ROOM_LIST[room].game.NombredeJoueurs <= ROOM_LIST[room].game.JeuxADeuxCartes && JoueurOn (Id)) {
+				// Un joueur n'a pas encore selectionne Deux cartes car nombre de joueurs <= ROOM_LIST[room].game.JeuxADeuxCartes
+				FinPhaseI = false
+			}
+		}
+	}
+	return FinPhaseI
+}
+
 
 
 // Vote pour une carte
@@ -400,36 +472,70 @@ function ClickcarteVote(socket,data) {
 	PLAYER_LIST[socket.id].IconAction = "done";
 	// GameUpdate
 	gameUpdate (room,PLAYER_LIST[socket.id].nickname + " a choisi sa carte");
+	
+	
 	// Verifier que toutes les carte ont été selectionner
-	let FinPhaseDeux = true;
-	for (let Id in ROOM_LIST[room].players){
-		if ( ROOM_LIST[room].players[Id].vote === "" && ROOM_LIST[room].players[Id].role === "joueur") {
-			FinPhaseDeux = false
-		}
-	}
-	if (FinPhaseDeux) {	
+	
+	if (CheckFinPhaseII (room)) {	
 		ROOM_LIST[room].game.PhaseSuivante();
 		CalculScore(room);
+		CheckVictoire (room);
 		gameUpdate (room,"Calculons maintenant les resultats");
 	}
 }
 
+function CheckFinPhaseII (room) {
+	let FinPhaseII = true;
+	for (let Id in ROOM_LIST[room].players){
+		if ( ROOM_LIST[room].players[Id].vote === "" && ROOM_LIST[room].players[Id].role === "joueur") {
+			FinPhaseII = false
+		}
+	}
+	return FinPhaseII
+}
 
-function ClickfinTour(socket){
+function ClickfinTour(socket,data){
 	if (!PLAYER_LIST[socket.id]) return // Prevent Crash
 	let room = PLAYER_LIST[socket.id].room  // Get the room the client was in
+	
 	ROOM_LIST[room].game.PhaseSuivante();
-	// Init Joueurs 
-	Winner = false;
 	for (let Id in ROOM_LIST[room].players) {
 		ROOM_LIST[room].players[Id].InitTour(room)
-		if (ROOM_LIST[room].players[Id].score >= 30 )
-			Winner = true;
 	}
 	// Initialise les donnée
 	ROOM_LIST[room].game.InitTour();
-	gameUpdate (room,"On continue ?");
+	gameUpdate (room,"C'est repartie");
 }
+
+function CheckVictoire (room) {
+	// Init Joueurs 
+	// Let PlaceUn = "";
+	// Let PlaceDeux = "";
+	// Let PlaceTrois = "";
+	HighScore = 0;
+	for (let Id in ROOM_LIST[room].players) {
+		if ( ROOM_LIST[room].players[Id].score >= Victoire ) {
+			ROOM_LIST[room].game.Winner = true;
+			// console.log (ROOM_LIST[room].players[Id].nickname+" a gagné")	
+		}
+	}
+	// console.log ("Personne a gagné")	
+}
+
+function newGame(socket,data){
+	console.log ('new game');
+	if (!PLAYER_LIST[socket.id]) return // Prevent Crash
+	let room = PLAYER_LIST[socket.id].room  // Get the room the client was in
+	ROOM_LIST[room].game.PhaseSuivante();
+	for (let Id in ROOM_LIST[room].players) {
+		ROOM_LIST[room].players[Id].InitGame(room)
+	}
+	// Initialise les donnée
+	ROOM_LIST[room].game.InitGame();
+	gameUpdate (room,"C'est repartie");
+	
+}
+
 
 
 
@@ -490,7 +596,8 @@ function AQui (room, IdCard)
 {
 	let retour = "-1"
 	for (let Id in ROOM_LIST[room].players){
-		if (ROOM_LIST[room].players[Id].selection === IdCard) {
+		// 
+		if (ROOM_LIST[room].players[Id].JoueurSelect.includes(IdCard)) {
 			retour = Id;
 		} 
 	}
@@ -502,7 +609,7 @@ function MAJDesScores(room)
 {
 	for (let Id in ROOM_LIST[room].players){
 		ROOM_LIST[room].players[Id].score += ROOM_LIST[room].players[Id].NbrPoints;
-		console.log (ROOM_LIST[room].players[Id].nickname+" Score="+ROOM_LIST[room].players[Id].score )
+		// console.log (ROOM_LIST[room].players[Id].nickname+" Score="+ROOM_LIST[room].players[Id].score )
 	}
 }
 
@@ -543,7 +650,7 @@ function SetIconAction (room,Id)
 	Player = PLAYER_LIST[Id]
 	Player.IconAction = "no-action";
 	if (Phase === 1){
-		if (Player.selection === "" ) {
+		if (Player.JoueurSelect.lenght === 0 ) {
 			Player.IconAction = "action";
 		} else {
 			Player.IconAction = "done";	
@@ -555,9 +662,13 @@ function SetIconAction (room,Id)
 			Player.IconAction = "done";	
 		}
 		
+	} else if (Phase == 2 && PLAYER_LIST[Id].role === "conteur")	{
+		Player.IconAction = "done";
+	} else if (Phase === 3 ) {
+		Player.IconAction = "done";
 	}
-	console.log (Phase);
-	console.log (Player);
+	// console.log (Phase);
+	// console.log (Player);
 }
 
 
@@ -595,7 +706,6 @@ function gameUpdate(room,message){
   }
   
 }
-
 
 
 

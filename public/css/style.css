@@ -21,12 +21,20 @@ J-Blanc:
 
 /* Style pour tous  */
 
+@font-face {
+  font-family: Changa;
+  src: url('../fonts/Changa-Medium.ttf');
+}
+@font-face {
+  font-family: Merrycle;
+  src: url('../fonts/Merrycle.otf');
+}
 
 
 body {
   color: #323032;
   font-family: 'Changa', sans-serif;
-  font-weight: bold;
+  /* font-weight: bold; */
   background-color: black;
   transform: scale(1);
   transform-origin: center top;
@@ -34,8 +42,7 @@ body {
 
 .xBody {
   position: relative;
-  width: 1300px;
-  height: 900px;
+
   margin: 8px auto 15px auto;
   background: #323032;
 }
@@ -63,7 +70,7 @@ button {
   position: relative;
   width: 400px;
   background: #F8FDFF;
-  top: 50%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 10px;
@@ -72,7 +79,7 @@ button {
 #join-game h1{
   color: #323032;
   font-size: 32px;
-  margin: 0;
+  margin: 4px;
   padding: 0;
   text-align: center;
 }
@@ -108,11 +115,11 @@ button {
 }
 
 #join-game #join-enter:hover {
-  background: #B32728;
+  background: #E8482E;
 }
 
 #join-game #join-create:hover {
-  background: #11779F
+  background: #E8482E
 }
 
 #join-game #error-message {
@@ -135,9 +142,9 @@ button {
 
 #Playerlist {
 	position: absolute;
-	width: 200px;
+	width: 250px;
 	top: 20px;
-	left: 20px;
+	left: 10px;
 	background: #F8FDFF;
 	border: 2px solid #F8FDFF;
 	border-radius: 10px;
@@ -145,7 +152,7 @@ button {
 }
 #Playerscore{
 	position: absolute;
-	width: 180px;
+	width: 200px;
 	top: 20px;
 	right: 20px;
 	background: #F8FDFF;
@@ -157,10 +164,10 @@ button {
 #BoiteMessage {
 	position: absolute;
 	background-color: #686c6d;
-	width: 800px;
-	right: 250px;
+	width: 750px;
+	left: 300px;
 	top: 20px;
-	height: 100px;
+	height: 50px;
 	overflow-y:scroll;
 }
 
@@ -180,7 +187,7 @@ button {
   width: 100%;
   /* height: 6em; */
   box-sizing: border-box;
-  text-align: left;
+  text-align: center;
 }
 
  h2, h3 {
@@ -189,6 +196,7 @@ button {
   text-align: center;
   margin: 0;
   border-radius: 10px;
+  font-family: 'Merrycle', sans-serif;
 }
 #Playerlist .player, #Playerscore .player{
   padding-left: 5px;
@@ -198,18 +206,14 @@ button {
 }
 
 
-#Playerlist .player .role  {
-	position: relative;
-	width: 32px;
-	display: inline-block;
-}
+
 #Playerlist .player .pseudo, #Playerscore .player .pseudo{
 	display: inline-block;
 	position: relative;
 	width: 60%;
 	text-align: left;
 	font-size: unset;
-    font-weight: bold;
+    /* font-weight: bold; */
 	margin-right: 5px;
 }
 #Playerlist .player .pseudo:hover {
@@ -219,15 +223,16 @@ button {
 	/* &#128483; */
 	background-image: url("../images/conteur.png");
 	 background-repeat: no-repeat;
-	background-size: 100% 100%;
-  background-clip: border-box;
+	background-size: 32px 32px;
+	background-clip: border-box;
+	background-position: right 
 }
 #Playerlist .player .action{
 	/* &#128483; */
 	position: relative;
 	display: inline-block;
 	background-image: url("../images/action.gif");
-	 background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-size: 100% 100%;
 	background-clip: border-box;
 	width: 32px;
@@ -244,36 +249,37 @@ button {
 	width: 32px;
 }
 
+#Playerlist .off{
+	/* &#128483; */
+	position: relative;
+	display: inline-block;
+	background-image: url("../images/off.png");
+	 background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-clip: border-box;
+	width: 32px;
+}
 
-#Playerscore .player .score{
+
+#Playerlist .player .score{
 	display: inline-block;
 	position: relative;
-	width: 25%;
+	width: 20%;
 	text-align: right;
 }
 
-#StartGame {
+.SelectionPhase {
 	position: absolute;
-	left: 500px;
-	top: 200px;
+	left: 600px;
+	top: 20px;
+	width: 200px;
 	background: #F8FDFF;
 	border: 2px solid #F8FDFF;
 	border-radius: 10px;
 	padding: 4px;
 }
 
-#SelectionCarte {
-	position: absolute;
-	Right: 20px;
-	top: 300px;
-	background: #F8FDFF;
-	background: #F8FDFF;
-	border: 2px solid #F8FDFF;
-	border-radius: 10px;
-	padding: 4px;
-}
-
-#StartGame button, #SelectionCarte button{	
+#SelectionPhase0 button, #SelectionPhase1 button, #SelectionPhase2 button, #SelectionPhase3 button, #SelectionVictoire button{	
 	color: #F8FDFF;
 	background-color: #E8482E;
 	text-align: center;
@@ -282,15 +288,17 @@ button {
 	text-decoration: none;
 	padding: 5px;
 	margin: 5px;
+	width : 95%;
 	margin-bottom: 15px;
-	font-size: 34px;
+	font-size: 25px;
 	box-shadow: 5px 5px 10px 5px #686c6d;
 }
-#StartGame button:hover {
+
+#SelectionPhase0 button:hover, #SelectionPhase1 button:hover, #SelectionPhase2 button:hover, #SelectionPhase3 button:hover, #SelectionVictoire button:hover {
 	background-color: #912C1C
 }
 
-#StartGame button:active {
+#SelectionPhase0 button:active, #SelectionPhase1 button:active, #SelectionPhase2 button:active, #SelectionPhase3 button:active, #SelectionVictoire button:active{
  background-color: #912C1C;
   box-shadow: 1px 1px 10px 1px #686c6d;
   transform: translateY(2px);
@@ -310,90 +318,198 @@ button {
 	margin: 10px 0px;
 }
 
-.carteM {
+.carteM , .carteV {
   position: absolute;
   margin: 1em 0;
   height: 300px;
   width: 200px;
   vertical-align: bottom;
   /* margin: 6px 8px; */
-  border-radius: 10px;
+  border-radius: 5%;
   box-shadow:   5px 5px 10px #686c6d;
   cursor: pointer;
+
 }
 
-.p0 {
-	bottom: 10px;
-	left: 8px;
+.macarte {
+	box-sizing: border-box;
+	border: 5px solid #E8482E;
 }
-.p1 {
-	bottom: 10px;
-	left: 224px;
-}
-.p2 {
-	bottom: 10px;
-	left: 440px;
-}
-.p3 {
-	bottom: 10px;
-	left: 656px;
-}
-.p4 {
-	bottom: 10px;
-	left: 872px;
-}
-.p5 {
-	bottom: 10px;
-	left: 1088px;
-}
-
-
 
 .carteM:hover {
-	box-shadow: inset 5px 5px 10px F8FDFF;
+	/* box-shadow: inset 5px 5px 10px F8FDFF; */
 }
 
 
-
-/* .selection { */
-	/* position: fixed; */
-	/* top: 300px; */
-	/* left: 500px; */
-	  /* height: 450px; */
-	  /* width: 300px; */
-	 /* margin: 0px; */
-	 /* padding: 0px; */
-	 /* box-shadow:   5px 5px 10px #686c6d; */
+/* #msg_phase2_joueur .tour-msg{ */
+	/* position: absolute; */
+	/* top: 170px ; */
+	
 /* } */
-
 
 .tour-msg {
 	position: absolute;
-	top: 250px;
-	left: 350px;
-	width: 600px;
+	top: 70px;
+	right: 40px;
+	width: 500px;
 	height: 200px;
 }
 
 .tour-msg h2{
 	text-align: center;
 	color: #686c6d;
-	background-color: #323032;
+	background-color: transparent;
 	font-size: xx-large;
 	text-shadow: 2px 2px 1px black;
 }
 .tour-msg p{
 	text-align: center;
 	color: #686c6d;
-	margin: 10px 20px;
-	background-color: #323032;
-	font-size: x-large;
+	/* margin: 10px 20px; */
+	background-color: transparent;
+	font-size: 22px;
 	text-shadow: 2px 2px 1px black;
+	padding: 0px;
+	margin: 0px;
 }
 .tour-msg #conteurName{
 
 	color: #E8482E;
-
 	text-shadow: 2px 2px 1px black;
 }
 
+
+.proprio {
+	position: absolute;
+	text-align: center;
+	color:  #F8FDFF;
+	background-color :#E8482E;
+	font-size: x-large;
+	border-radius: 5px;
+}
+.piondevote {
+	position: absolute;
+	text-align: center;
+	color:  #F8FDFF;
+	background-color :#E8482E;
+	font-size: x-large;
+	border-radius: 5px;
+	z-index: 15;
+}
+
+
+
+@keyframes cache {
+	 /* 0% { clip-path : polygon(0 0, 0 300px, 200px 300px , 200px 0) ;} */
+	 100% {clip-path : polygon(0 0, 0 20px, 200px 20px, 200px 0) ;  bottom : -180px; }
+}
+
+
+
+
+/* Bouton Regle du jeux  et quitter le jeux */
+
+#BoiteAbutton {
+	position: absolute;
+	top: 20px;
+	right : 20px;
+	width : 200px;
+}
+
+#BoiteAbutton button {
+  position: relative;
+  margin: 1%;
+  border-radius: 3px;
+  border: 2px solid #686c6d;
+  box-sizing: border-box;
+  padding: 4px;
+  width: 44%;
+  font-size: 16px;
+  background: #686c6d;
+  color: #F8FDFF;
+  float: left;
+  margin-left: 4%;
+}
+
+#BoiteAbutton button:hover {
+  background: #E8482E
+}
+
+.above {
+  z-index: 3 !important;
+}
+
+/* #about-button, #exit-game { */
+  /* position: absolute; */
+  /* right: 0; */
+  /* margin-right: 10px; */
+  /* margin-top: 10px; */
+  /* border: 2px solid #F8FDFF; */
+  /* background: #323032; */
+  /* color: #F8FDFF; */
+  /* font-size: 16px; */
+/* } */
+
+/* #about-button.open, #exit-game.open { */
+  /* color: #323032; */
+  /* background: #F8FDFF; */
+/* } */
+
+/* #about-button:hover, #exit-game:hover { */
+  /* background: #686c6d; */
+/* } */
+
+#about-button-close {
+
+	position: absolute;
+    right: 0;
+    background-color: #F8FDFF;
+    font-size: x-large;
+    border: none;
+    top: 0;
+     /* border-radius: 50%;  */
+}
+
+#about-button-close:hover {
+  background: #686c6d;
+}
+
+#about-window {
+  position: absolute;
+  width: 80%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #F8FDFF;
+  top: 20px;
+  border-radius: 10px;
+  margin-bottom: 200px;
+}
+
+#about-window ul {
+  position: relative;
+  list-style: square !important;
+  padding: 50px;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+#about-window h2 {
+  text-align: center;
+}
+
+#about-window h3 {
+  text-align: center;
+}
+
+#about-window a {
+  display: block;
+  width: 300px;
+  margin: 0 auto;
+  text-align: center;
+  text-decoration: none;
+  color: #323032;
+}
+
+#about-window a:hover {
+  color: #11779F;
+}

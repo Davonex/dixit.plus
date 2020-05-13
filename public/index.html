@@ -4,7 +4,7 @@
   
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css?family=Changa:300" rel="stylesheet"> 
+  <!-- <link href="https://fonts.googleapis.com/css?family=Changa:300" rel="stylesheet">  -->
   </head>
   
   
@@ -14,7 +14,8 @@
   
   <!-- Creez une salle ou se joindre à la salle -->
   <div id="join-game">
-    <h1>Dixit</h1>
+    <!-- <h1>Dixit</h1> -->
+	<h1><img src="/images/logo.png" alt="Dixit" height="124" width="350" ></h1>
     <!-- <form> -->
       <div class='join-input'>
         <label for='join-nickname'>Pseudo: </label>
@@ -35,56 +36,110 @@
   </div>
   
   
+  <div id="overlay"> </div>
+  
   <div id="game" style="display:none">
   <!-- liste des joueurs   -->
 	<div id="Playerlist">
-		<h3>Rôles</h3>
-		<div class='panel'>
-			
-		</div>
+		<h3></h3>
+		<div class='panel'>	</div>
 	</div>
 	
-		<div id="Playerscore">
-		<h3>Scores</h3>
-		<div class='panel'>
-			
-		</div>
-		</div>
+		<!-- <div id="Playerscore"> -->
+			<!-- <h3>Scores</h3> -->
+			<!-- <div class='panel'></div> -->
+		<!-- </div> -->
+	<div id='BoiteAbutton'  >
+		<button id="exit-game">Quittez</button>
+		<button id="about-button">Régles</button>
+	</div>
 	
-	
-	<div id='BoiteMessage'>
+	<div id='BoiteMessage' style="display: none" >
 		
 	</div>	
 	
 	<!-- bouton pour demarrer la partie  -->
-	<div id="StartGame" style="display: none">
+	<div id="SelectionPhase0" class="SelectionPhase" style="display: none">
 		<div class="panel">
 			<!-- <h2>Démarrage de la partie</h2> -->
 			<button id="start">Démarrer le tour</button>
 		</div>
 	</div> 
-	<!-- find de StartGame -->
-	
-	<div id="msg_choix_carte_conteur" class="tour-msg" style="display: none">
-		<h2>Vous êtes le conteur</h2>
-		<p>Selectionnez un carte en cliquant dessus</p>
-		<p>Puis lancez <u>un mot</u> ou <u>une phrase</u> à voix haute en rapport avec l’illustration de la carte sélectionnée</p>
-	</div>
-	
-	<div id="msg_choix_carte_joueur" class="tour-msg" style="display: none">
-		<h2>Le conteur c'est <span id="conteurName"><span></h2>
-		<p>Ecoutez <u>le mot</u> ou <u>la phrase</u> lancé par le conteur<p>
-		<p>choisissez une carte ayant une illustration en rapport avec le <u>le mot</u> ou <u>la phrase</u>.<p>
-	</div>
+	<!-- find de SelectionPhase0 -->
 	
 	
-		<!-- bouton pour demarrer la partie  -->
-	<div id="SelectionCarte" style="display: none">
+	<div id="SelectionPhase1" class="SelectionPhase" style="display: none">
 		<div class="panel">
 			<!-- <h2>Démarrage de la partie</h2> -->
-			<button id="CarteSelectionee">Valider<br>votre Selection</button>
+			<button id="CarteSelectionee">Valider</button>
 		</div>
 	</div> 
+	
+	<div id="SelectionPhase2" class="SelectionPhase" style="display: none">
+		<div class="panel">
+			<!-- <h2>Démarrage de la partie</h2> -->
+			<button id="ClickVoteUneCarte">&nbsp;Voter&nbsp;</button>
+		</div>
+	</div> 
+	
+	
+	<div id="SelectionPhase3" class="SelectionPhase" style="display: none">
+		<div class="panel">
+			<!-- <h2>Démarrage de la partie</h2> -->
+			<button id="ClickFinTour">Tour<br>suivant</button>
+		</div>
+	</div> 
+	
+	
+	
+	
+	<!-- Message affiche durant la phase I -->
+	<div id="msg_phase1_conteur" class="tour-msg" style="display: none">
+		<h2>Vous êtes le conteur</h2>
+		<p>Selectionnez un carte en cliquant dessus, et lancez <u>un mot</u> ou <u>une phrase</u> à voix haute en rapport avec l’illustration choisie</p>
+	</div>
+	
+	<div id="msg_phase1_joueur" class="tour-msg" style="display: none">
+		<h2>Le conteur c'est <span id="conteurName"><span></h2>
+		<p>Ecoutez <u>le mot</u> ou <u>la phrase</u> lancé par le conteur et choisissez une carte ayant une illustration en rapport avec <u>le mot</u> ou <u>la phrase</u>.
+		<p>Si il y <span id="JeuxADeuxCartes"></span> joueurs ou moins, vous devez selectionner <u>2 cartes</u></p>
+	</div>
+	
+	
+	<!-- message afficher durant la phase II -->
+		<div id="msg_phase2_conteur" class="tour-msg" style="display: none">
+		<h2>Vous êtes le conteur</h2>
+		<p>Attendez que tous le monde vote</p>
+		<p></p>
+		</div>
+		
+	<div id="msg_phase2_joueur" class="tour-msg" style="display: none">
+		<h2>Phase de vote</h2>
+		<p>Votre but est de retrouver l’image du conteur parmi toutes les images exposées. Choisissez une carte et cliquer sur le bouton <u>voter</u>.</p>
+	</div>
+	
+	<!-- message afficher durant la phase III -->
+	<div id="msg_phase3_conteur" class="tour-msg" style="display: none">
+		<h2>Les Scores</h2>
+		<p></p>	
+	</div>
+	
+	<div id="msg_phase3_joueur" class="tour-msg" style="display: none">
+		<h2>Les Scores</h2>
+		<p></p>	
+	</div>
+	
+	<div id="msg_victoire" class="tour-msg" style="display: none;left:500px;top: 100px;color: #E8482E;">
+		<h1><span id="gagnantName"></span> est le gagnant</h1>
+		
+	</div>
+		<div id="SelectionVictoire" class="SelectionPhase" style="display: none" >
+		<div class="panel">
+			<!-- <h2>Démarrage de la partie</h2> -->
+			<button id="ClickNewGame">Nouvelle partie</button>
+		</div>
+	</div> 
+	
   
 	  <!-- Carte de la main du joueur² -->
 	  <div id="Main">
@@ -92,14 +147,29 @@
 			</div>  
 	  </div>
 	  
-
+	<div id='about-window' style="display:none" class='above'>
+		<div> <button id='about-button-close'>&#x2612;</button>	</div>
+		<div>
+			 <h2>Dixit.plus by Davinox</h2>
+			 <h2>Version 1.1.2</h2>			 
+		</div>
+		<div>
+			<h3>La règle du jeu du Dixit</h3>
+		<ul>
+			<li>Chaque joueur reçoit 6 cartes</li>
+			<li>Un Conteur est désigné, (Conteur qui tournera à chaque tour)</li>
+			<li>A chaque tour, le joueur doit compléter sa main pour posséder 6 cartes</li>
+		</ul>		
+			
+		</div>
+	</div>
   
   </div>
 	
 		
 	<script src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="js/fn-jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="js/dixit.js"></script>
   </div>
   </body>
