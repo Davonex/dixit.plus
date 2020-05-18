@@ -38,7 +38,8 @@ class Game{
 		this.NombredeJoueurs = 0;
 		this.Winner = false;
 		this.InitTour ();
-		this.JeuxADeuxCartes = 4;
+		this.JeuxADeuxCartes = 3;
+		this.Victoire = 30;
 		// console.log (this.Paquet)
 	}
 	

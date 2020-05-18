@@ -45,7 +45,7 @@ var CarteVote = {
 };
 
 var PionVote = {
-	bottom : (CarteVote.bottom + CarteVote.height),
+	bottom : (CarteVote.bottom + CarteVote.height - 5),
 	left : 5,
 	height: 50,
 	width : 50,
@@ -118,7 +118,8 @@ $("#CarteSelectionee").click(function () {
 	if (CSid != "") {
 	let data;
 	data = {IdCarte : CSid};
-	SelectionCarte (CSid);
+	data = {IdCarte : CSid};
+	// SelectionCarte (CSid);
 	socket.emit('carteSelectionne', data);
 	} else {
 		console.log ("selectionner une carte");
@@ -160,6 +161,7 @@ $("#about-button").click(function(){
     aboutWindow.style.display = 'block'
     overlay.style.display = 'block'
     $("#about-button").addClass('open')
+	// document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
   } else {
     aboutWindow.style.display = 'none'
     overlay.style.display = 'none'
@@ -203,8 +205,10 @@ socket.on('gameState', (data) =>{           // Response to gamestate update
   // updateInfo(data.game, data.team, data.players)      // Update the games turn information
   // updateTimerSlider(data.game, data.mode)          // Update the games timer slider
   // updatePacks(data.game)                // Update the games pack information
-	// console.log (data.players[socket.id]);
-	// console.log (data.game);
+	console.log ('Joueur : '+data.players[socket.id].nickname);
+	console.log (data.players[socket.id]);
+	console.log ('Game : ');
+	console.log (data.game);
 	// test le nombre de joueur
 	// if (data.game.NombredeJoueurs <= 7) {
 		// CarteVote.left = (1500-(data.game.NombredeJoueurs * CarteVote.width))/data.game.NombredeJoueurs		
@@ -389,6 +393,7 @@ function UpdateCarteMain (data){
 			UnJoueur += ' class="carteM"';
 			UnJoueur += ' style="bottom: '+CarteMain.bottom+'; left: '+gauche+'; margin: 0"';
 			UnJoueur += ' pos="'+i+'"';
+			UnJoueur += ' removing="false"';
 			UnJoueur += ' cache="false"'
 			UnJoueur += '>';
 			$(UnJoueur).appendTo($("#game"))
@@ -428,23 +433,37 @@ function DeCacheCarteMain (data,id) {
 	$("#carte_"+data.players[socket.id].main[id]).attr('cache', 'false')			
 }
 
-// deccaller les carte vers la droite
+
+
+
+// deccaller les carte vers la droite 
+// && $("#carte_"+data.players[socket.id].JoueurSelect[j]).attr ('removing') === "true"
 function DecallerLesCarte (data){	
 	for (let j in data.players[socket.id].JoueurSelect) {
-		if ( $("#carte_"+data.players[socket.id].JoueurSelect[j]).exists )
-			$("#carte_"+data.players[socket.id].JoueurSelect[j]).remove(500);
+		if ( $("#carte_"+data.players[socket.id].JoueurSelect[j]).exists   )
+			$("#carte_"+data.players[socket.id].JoueurSelect[j]).fadeOut(100, function(){ $(this).remove();});
+			$("#carte_"+data.players[socket.id].JoueurSelect[j]).attr('removing','true');
 	}
 	// il faut decaler les position des cartes
 	let pos = 0;
-	let decale = false;
+	
 	$(".carteM").each(function(i){
-		gauche =  ((CarteVote.width+CarteVote.left)*i)+CarteVote.left;
-		$( this ).css('left',gauche)
-		$( this ).attr('pos',i)
-		 //console.log ("decale "+i);		
+		if ( $( this ).attr ('removing') === "false") {
+			gauche =  ((CarteVote.width+CarteVote.left)*pos)+CarteVote.left;
+			// $(this).animate({left: gauche});
+			$( this ).css('left',gauche)
+			$( this ).attr('pos',pos)
+			 //console.log ("decale "+i);	
+			pos += 1;
+		 }
 	});
 } 
 
+
+
+
+
+// Get File with ID
 function IdCardToFile (data,IdCard) {
 	// console.log ("IdCard : "+IdCard + " SRC : "+"images/cartes/"+data.game.Paquet[IdCard])
 	return ("images/cartes/"+data.game.Paquet[IdCard]);
@@ -540,36 +559,55 @@ function UpdateCarteVote (data)
 
 function ShowVote (data)
 {
+	
+	console.log ("ShowVote:Carte vote selectionne : "+CVid);	
 	var bas = (5+CarteVote.bottom+CarteVote.height);
+	var Class = ""
 	// Seulement en phase 3
 	if (PhaseDeJeux == 3) {
 		for (let i in data.players){
+			if (i === socket.id) { Class="Moi"}
+			else {Class="PasMoi"}
 			// affiche le non du  proprietaire de la carte
 			for (let j in data.players[i].JoueurSelect) {
 				Pos = parseInt($("#vote_"+data.players[i].JoueurSelect[j]).attr("pos"));
 				Gauche =  parseInt(((CarteVote.width+CarteVote.left)*Pos)+CarteVote.left);
-				Nom = '<p class="proprio" style="'+
-					'width: '+CarteVote.width+
-					';left: '+Gauche+
-					'; bottom: '+bas+
-					'">'+data.players[i].nickname+'</p>';
+				Nom = '<p class="proprio '+ Class + ' ' + data.players[i].role +'"';
+				Nom += ' style="'+'width: '+CarteVote.width+';left: '+Gauche+'; bottom: '+bas+'">'+data.players[i].nickname
+				Nom += '</p>';
 				// console.log (Nom);
 				$(Nom).appendTo($("#game"))
+				
+				Score = '<p class="gain"';
+				Score += ' style="'+'width: '+CarteVote.width+';left: '+Gauche+'; bottom: '+parseInt(5+CarteVote.bottom)+'"> +'+data.players[i].NbrPoints+' Pt(s)'
+				Score += '<p>';
+				$(Score).appendTo($("#game"))
+				//fadeIn(100, function(){ $(this).appendTo($("#game");});
 			}
-			// affiche le vote de 
+			
+			
+			// affiche les votes sur la carte du joueurs 
 			PosB = 1;
-			if (data.players[i].QuiVotePourMoi.length != 0){
-				for (let j in data.players[i].QuiVotePourMoi){	
+			PosL = 0;
+			if (data.players[i].AVoterPourMoi.length != 0){
+				for (let j in data.players[i].AVoterPourMoi){	
+					if (data.players[i].AVoterPourMoi[j] === socket.id) { Class="Moi"}
+						else {Class="PasMoi"}
+					if (PosB > 3) {
+						PosB = 1;
+						PosL += 1;
+					} 
 					let basPion = PionVote.bottom-(PosB * (PionVote.height+10))
-					pPoinVote = '<p class="piondevote" style="'+
-					'left:'+(Gauche+5)+
-					';bottom : '+basPion+
-					'; width:'+PionVote.width+
-					'; height:'+PionVote.height+
-					';">'+String(data.players[data.players[i].QuiVotePourMoi[j]].nickname).substring(0,3)+'.</p>';
+					let gauchePion = (PosL*(PionVote.width + 15))+Gauche+5 
+					pPoinVote = '<p class="piondevote  '+Class;
+					pPoinVote += '" style="'+'left:'+gauchePion+';bottom : '+basPion+'; width:'+PionVote.width+'; height:'+PionVote.height+';">'
+					pPoinVote += '<span class="poinvote-text">';
+					pPoinVote += String(data.players[data.players[i].AVoterPourMoi[j]].nickname).substring(0,3)
+					pPoinVote += '</span>';
+					pPoinVote += '.</p>';
 					$(pPoinVote).appendTo($("#game"))
 					
-					// console.log (data.players[data.players[i].QuiVotePourMoi[j]].nickname"->"pPointVote)
+					// console.log (data.players[data.players[i].AVoterPourMoi[j]].nickname"->"pPointVote)
 					PosB +=1;
 				}
 			}
@@ -582,9 +620,16 @@ function ShowVote (data)
 }
 
 
+
+// function ShowPion ()
+// {
+	
+// }
+
+
 function VoteUneCarte (id ) {
 	Carte = $("#vote_"+id);
-	 if (PhaseDeJeux == 2) {
+	 // if (PhaseDeJeux == 2 ) {
 		if ( CVid === "" ) {
 		//sauvegarde de la position
 		CVpos = Carte.css("left");
@@ -598,9 +643,9 @@ function VoteUneCarte (id ) {
 		} else {
 			// console.log("vous avez deja selectionné la carte :"+CVid+"!");
 		}
-	} else {
+	// } else {
 		// console.log(" ce n'est pas le bon monent");
-	}
+	// }
 }
 
 
@@ -628,6 +673,8 @@ function InitVoteEtPion (data) {
 		$(".carteV").each (function(){$(this).remove();});	
 		$(".proprio").each (function(){$(this).remove(); });
 		$(".piondevote").each (function(){$(this).remove();	});
+		$(".gain").each (function(){$(this).remove();	});
+		
 		$("#msg_phase3_conteur").hide();
 		$("#msg_phase3_joueur").hide();
 		$("#SelectionPhase3").hide();

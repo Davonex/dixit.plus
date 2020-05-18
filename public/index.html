@@ -148,19 +148,39 @@
 	  </div>
 	  
 	<div id='about-window' style="display:none" class='above'>
-		<div> <button id='about-button-close'>&#x2612;</button>	</div>
+		<div> <button id='about-button-close'>&times;</button>	</div>
 		<div>
 			 <h2>Dixit.plus by Davinox</h2>
 			 <h2>Version 1.1.2</h2>			 
 		</div>
 		<div>
-			<h3>La règle du jeu du Dixit</h3>
+		<h3>La règle du jeu du Dixit</h3>
 		<ul>
 			<li>Chaque joueur reçoit 6 cartes</li>
 			<li>Un Conteur est désigné, (Conteur qui tournera à chaque tour)</li>
 			<li>A chaque tour, le joueur doit compléter sa main pour posséder 6 cartes</li>
 		</ul>		
-			
+		<h3>La partie se déroule en 3 phases :</h3>	
+		<ol>
+			<li>Le Conteur donne sa phrase</li>
+			<ol>
+				<li>Le Conteur choisit l’une se ses cartes et lance un mot/une phrase à voix haute en rapport avec l’illustration de la carte sélectionnée. (il peut s’agir d’un titre de film, d’une couleur, une émotion, une citation, une blague, etc.)</li>
+				<li>Chaque joueur à son tour choisit une carte ayant une illustration en rapport avec le mot/la phrase du Conteur.</li>
+				<li>Les cartes sont melangées de affichées pour passer au vote</li>
+			</ol>
+			<li>Les joueurs votent</li>
+			<ol>
+				<li>L’objectif pour les joueurs est de retrouver la carte du Conteur.</li>
+				<li>Les joueurs choisissent la carte qu’ils pensent être la bonne. Il est impossible de voter pour sa propre image (Évidemment, le Conteur ne vote pas).</li>
+			</ol>
+			<li>Décompte des points</li>
+			<ol>
+				<li>Si tous les joueurs trouvent l’image du Conteur, l’énigme était alors trop évidente et le <span class="bleu">Conteur marque 0</span>. Les autres joueurs marquent 2.</li>
+				<li>Si aucun joueur ne trouve la bonne image, l’énigme était trop difficile et le <span class="bleu">Conteur marque 0</span> et les <span class="bleu">joueurs marquent 2</span>.</li>
+				<li>Dans les autres cas (si quelques joueurs trouvent l’énigme), le <span class="bleu">Conteur</span> ainsi que <span class="bleu">les Joueurs</span> désignant la bonne carte <span class="bleu">marquent 3</span>.</li>
+				<li>Chaque Joueur ayant induit l’autre en erreur  <span class="bleu">marque 1</span> (si quelqu’un vote à tort pour votre carte) par vote.</li>
+			</ol>
+		<ol>
 		</div>
 	</div>
   

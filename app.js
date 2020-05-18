@@ -36,7 +36,7 @@ let io = require('socket.io')(server)
 const Game = require('./server/game.js')
 const MaxJoueurs = 8; // Max par room
 const MinJoueurs = 3; // Min par room
-const Victoire = 30;
+
 
 // object qui conserve les trace des sockets, Salle et joueurs.
 let SOCKET_LIST = {}
@@ -72,7 +72,8 @@ class Player {
 	
 	this.statut = "on";  // ["on":"off"]
 	this.place = 0;
-	this.QuiVotePourMoi = [];
+	this.AVoterPourMoi = [];
+	this.JaiVotePour = [];
 	this.NbrPoints = 0;
 	this.IconAction = "no-action" //IconAction = ['no-action'|'action'|'done'|'off']]
     // Add player to player list and add their socket to the socket list
@@ -110,7 +111,8 @@ class Player {
 	this.role = "joueur";
 	this.JoueurSelect = [];
 	this.vote = "";
-	this.QuiVotePourMoi = [];
+	this.AVoterPourMoi = [];
+	this.JaiVotePour = [];
   }
   
   InitGame (room) {
@@ -123,7 +125,7 @@ class Player {
 	this.role = "joueur";
 	this.JoueurSelect = [];
 	this.vote = "";
-	this.QuiVotePourMoi = []; 
+	this.AVoterPourMoi = []; 
   }
 
 
@@ -269,7 +271,7 @@ function createRoom(socket, data){
 		ROOM_LIST[room].game.CreationMain(ROOM_LIST[room].players[socket.id]);
         socket.emit('joinResponse', {success:true, msg: "Salle Créée"})// Tell client creation was successful
         gameUpdate(room,"Salle crée")                                  // Update the game for everyone in this room
-        logStats(socket.id + "(" + player.nickname + ") A créé la salle  '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
+        logStats("CREATE ROOM: " + socket.id + "(" + player.nickname + ") ROOM NAME: " + ROOM_LIST[player.room].room)
 		// console.log (ROOM_LIST[room]);
 		ROOM_LIST[room].game.NombredeJoueurs +=1;
       }
@@ -308,7 +310,7 @@ function joinRoom(socket, data){
 		let message = pseudo +" vient de se joindre à votre salle"
 		gameUpdate(room,message)                                  // Update the game for everyone in this room
 		// Server Log
-		logStats(socket.id + "(" + player.nickname + ") JOINED '" + ROOM_LIST[player.room].room + "'(" + Object.keys(ROOM_LIST[player.room].players).length + ")")
+		logStats("JOIN ROOM: " + socket.id + "(" + player.nickname + ") ROOM NAME: " + ROOM_LIST[player.room].room )
 		ROOM_LIST[room].game.NombredeJoueurs +=1;
 	}
 }
@@ -467,7 +469,11 @@ function ClickcarteVote(socket,data) {
 	let room = PLAYER_LIST[socket.id].room  // Get the room the client was in
 
 	// on ajouter dans vote
+	const VotePour = IdCardToIdPlayer(room,data.IdCarte ) ;
 	PLAYER_LIST[socket.id].vote = data.IdCarte;
+	PLAYER_LIST[socket.id].JaiVotePour.push(VotePour);
+	PLAYER_LIST[VotePour].AVoterPourMoi.push(socket.id);
+	
 	//  l'IconAction = done
 	PLAYER_LIST[socket.id].IconAction = "done";
 	// GameUpdate
@@ -514,7 +520,7 @@ function CheckVictoire (room) {
 	// Let PlaceTrois = "";
 	HighScore = 0;
 	for (let Id in ROOM_LIST[room].players) {
-		if ( ROOM_LIST[room].players[Id].score >= Victoire ) {
+		if ( ROOM_LIST[room].players[Id].score >= ROOM_LIST[room].game.Victoire ) {
 			ROOM_LIST[room].game.Winner = true;
 			// console.log (ROOM_LIST[room].players[Id].nickname+" a gagné")	
 		}
@@ -545,54 +551,76 @@ function newGame(socket,data){
 
 
 /******/
-// Fonction Utile et privat
+// Fonction  privat
 
 function JoueurOn (Id) {
 	 return PLAYER_LIST[Id].statut === "on"; 
 }
 
+
+
 function CalculScore (room) 
 {
 		// On cherche a savoir  qui  a voté pour qui
 	let NbrDeVotants = 0;
-	let NbrVoteConteur = 0;
-	let IdConteur = "";
+	// let NbrVoteConteur = 0;
+	let IdConteur = ROOM_LIST[room].game.ConteurId;
 	// Les points des joueurs
+
 	for (let Id in ROOM_LIST[room].players){
 		if (ROOM_LIST[room].players[Id].role == "joueur"){
-			IdVotePour = AQui(room, ROOM_LIST[room].players[Id].vote);
-			if (IdVotePour != "-1") {
+			// IdVotePour = IdCardToIdPlayer(room, ROOM_LIST[room].players[Id].vote);
+			// if (IdVotePour != "-1") {
 				// donc on lui ajoute une voix
-				ROOM_LIST[room].players[IdVotePour].QuiVotePourMoi.push(Id);
-				// Si vote pour compteur +=1 point
-				if (ROOM_LIST[room].players[IdVotePour].role == "conteur") {
-					ROOM_LIST[room].players[Id].NbrPoints += 1;
-					NbrVoteConteur +=1;
-				} else {
-					ROOM_LIST[room].players[IdVotePour].NbrPoints += 1;
-				}
-				NbrDeVotants +=1;
+				//ROOM_LIST[room].players[IdVotePour].AVoterPourMoi.push(Id);
+				// Si vote pas pour compteur +=1 point
+				// if (ROOM_LIST[room].players[IdVotePour].role !==  "conteur") {
+					// ROOM_LIST[room].players[Id].NbrPoints += 1;
+					// NbrVoteConteur +=1;
+				// } else {
+					ROOM_LIST[room].players[Id].NbrPoints +=  ROOM_LIST[room].players[Id].AVoterPourMoi.length;
+					console.log ('Le Joueur '+PLAYER_LIST[Id].nickname+' a '+PLAYER_LIST[Id].AVoterPourMoi.length+' vote(s)');
+				// }
+				// NbrDeVotants +=1;
 			}
-		} else {
-			IdConteur = Id;
-		}	
+		// } else {
+			// IdConteur = Id;
+		// }	
 	}
-	// Les points du compteur
-	if (NbrDeVotants == NbrVoteConteur || NbrVoteConteur == 0)
+ 
+	
+	
+	// Les points du compteur ou des joueurs ayant voté pour le conteur
+	console.log ('Le compteur '+PLAYER_LIST[IdConteur].nickname+' a '+PLAYER_LIST[IdConteur].AVoterPourMoi.length+' vote(s)');
+	if (ROOM_LIST[room].game.CartesSelectionnes.length -1  === PLAYER_LIST[IdConteur].AVoterPourMoi.length || PLAYER_LIST[IdConteur].AVoterPourMoi.length === 0)
 	{
+		console.log ('Le compteur '+ROOM_LIST[room].players[IdConteur].nickname+' marque 0pt');
+		// Si Le conteur à tous les votes ou 0 vote. 
 		for (let Id in ROOM_LIST[room].players){
 			if (ROOM_LIST[room].players[Id].role == "joueur"){
 					ROOM_LIST[room].players[Id].NbrPoints += 2;
+					console.log ('Le joueur '+ROOM_LIST[room].players[Id].nickname+' marque 2pts');
 			}
 		}
 	} else {
+		// Dans les autres cas le Conteur ainsi que les Joueurs désignant la bonne carte marquent 3
+		console.log ('Le compteur '+ROOM_LIST[room].players[IdConteur].nickname+' marque 3pts');
 		ROOM_LIST[room].players[IdConteur].NbrPoints += 3;
+		
+		for (let Id in ROOM_LIST[room].players[IdConteur].AVoterPourMoi) {	
+			// console.log (ROOM_LIST[room].players[ROOM_LIST[room].players[IdConteur].AVoterPourMoi[Id]]);
+			console.log ('Le joueur '+ROOM_LIST[room].players[ROOM_LIST[room].players[IdConteur].AVoterPourMoi[Id]].nickname+' marque 3pts');
+			ROOM_LIST[room].players[ROOM_LIST[room].players[IdConteur].AVoterPourMoi[Id]].NbrPoints += 3;	
+		}
+		
 	}
 
 	MAJDesScores(room);
 }
 
-function AQui (room, IdCard)
+
+// retourne le proprietaire de la carte  IDCard
+function IdCardToIdPlayer (room, IdCard)
 {
 	let retour = "-1"
 	for (let Id in ROOM_LIST[room].players){
@@ -638,6 +666,8 @@ function SwitchId (OldId, NewId,room)
 	PLAYER_LIST[NewId] = PLAYER_LIST[OldId]
 	ROOM_LIST[room].players[NewId] = PLAYER_LIST[OldId];
 	ROOM_LIST[room].players[NewId].id = NewId;
+	// Modifier les ID AVoterPourMoi ?
+	
 	
 	// Delete old playerId from the player list
 	delete ROOM_LIST[room].players[OldId]
