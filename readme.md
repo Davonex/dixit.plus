@@ -27,7 +27,13 @@ let server = app.listen(process.env.PORT || 8080,"127.0.0.1", listen);
 ```bash
 node app.js
 ```
-* Ouvrez votre navigateur favori (Firefox !)  et miracle
+* Ouvrez votre navigateur favori (Firefox !)  
+```
+http://localhost:8080/
+```
+
+* et miracle
+
 
 ![](https://raw.githubusercontent.com/Davonex/dixit.plus/master/readme/Screen%20Shot.png )
 
