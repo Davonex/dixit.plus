@@ -41,3 +41,6 @@ http://localhost:8080/
 
 Vous pouvez consulter les regles sur  (https://www.regledujeu.fr/dixit/, "regledujeux.fr")
 
+
+SELECT distinct concat (`kd7vj_gadherents_tcd`.NOM," ",`kd7vj_gadherents_tcd`.PRENOM) AS NOM_COMPLET, `kd7vj_users`.name, `kd7vj_users`.`username` FROM `kd7vj_gadherents_tcd` LEFT JOIN `kd7vj_users` ON concat (`kd7vj_gadherents_tcd`.NOM," ",`kd7vj_gadherents_tcd`.PRENOM) = `kd7vj_users`.name Order by concat (`kd7vj_gadherents_tcd`.NOM," ",`kd7vj_gadherents_tcd`.PRENOM)
+
